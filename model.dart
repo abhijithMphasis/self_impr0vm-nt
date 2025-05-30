@@ -40,10 +40,6 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
       securityHeldByValue,
       securitStatusValue;
   bool isSecurityGroupSelected = false;
-  List<Reference> proposedSecurityAmountItems = [Reference(name: "AED")];
-  List<Reference> presentSecurityAmountItems = [Reference(name: "AED")];
-  List<Reference> securityHeldByItems = [Reference(name: "AED")];
-  List<Reference> securityStatusItems = [Reference(name: "Held")];
 
   String selectedTangibleSecurityValue = TangibleSecurities.no.name;
   List<String> tangibleSecurity = [
@@ -72,64 +68,11 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
     IsSecurityExpiryOpenEndeds.no.name
   ];
 
-  List<Reference> securityDescriptionPropertyItems = [
-    Reference(name: 'Assignment of Insurance')
-  ];
-
-  List<Reference> securityDescriptionInsuranceItems = [
-    Reference(name: 'Notarised Commercial Mortgage'),
-    Reference(name: 'Assignment of leasehold - Musataha'),
-    Reference(name: 'Conditional assignment of SPA'),
-    Reference(name: 'Hold on title deeds'),
-    Reference(name: 'Mortgage of Properties'),
-    Reference(name: 'Mortgage of Leasehold - Mustaha'),
-    Reference(name: 'Mortgage with free zone authorities')
-  ];
-
-  List<Reference> securityDescriptionGuaranteeItems = [
-    Reference(name: 'Personal Guarantee'),
-    Reference(name: 'Bank Guarantee'),
-    Reference(name: 'Corporate Guarantee')
-  ];
-
-  List<Reference> securityDescriptionReceivablesItems = [
-    Reference(name: 'Assignement of receivables'),
-    Reference(name: 'Security Cheque')
-  ];
-
-  List<Reference> securityDescriptionDepositeItems = [
-    Reference(name: 'Pledge of Account'),
-    Reference(name: 'Pledge of TD')
-  ];
-
-  List<Reference> securityDescriptionSharesItems = [
-    Reference(name: 'Charge over CBDFS Portfolio'),
-    Reference(name: 'Pledge of bonds'),
-    Reference(name: 'Pledge of Investment products'),
-    Reference(name: 'Pledge of JSC Shares'),
-    Reference(name: 'Pledge of LLC')
-  ];
-
-  List<Reference> securityDescriptionCommoditiesItems = [
-    Reference(name: 'Pledge of commodities'),
-    Reference(name: 'Pledge of precious metals')
-  ];
-
-  List<Reference> securityDescriptionMovableAssetsItems = [
-    Reference(name: 'Mortgage of Aircraft'),
-    Reference(name: 'Pledge of Movable assets'),
-    Reference(name: 'Mortgage of Vehicles'),
-    Reference(name: 'Mortgage of Vessel')
-  ];
-
-  List<Reference> securityDescriptionFixedAssetsItems = [
-    Reference(name: 'Pledge of Plant & Machinery/Fixed Assets')
-  ];
-
   List<Reference> selectedSecurityDescriptions = [];
 
   List<Reference> securityReferenceData = [];
-
+  List<Reference> securityHeldAsList = [];
+  List<Reference> securityStatusList = [];
   void init(context) async {
     logger.i('initialising CreateSecurityViewModel');
     repository = RequestRepository.instance;
@@ -142,10 +85,15 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
       Map<String, List<Reference>> referenceData =
           await ReferenceDataService().getReferenceData([
         ReferenceDataKeys.securityType,
+        ReferenceDataKeys.securityStatus,
+        ReferenceDataKeys.securityHeldAs
       ]);
       securityReferenceData =
           referenceData[ReferenceDataKeys.securityType] ?? [];
-
+      securityHeldAsList =
+          referenceData[ReferenceDataKeys.securityHeldAs] ?? [];
+      securityStatusList =
+          referenceData[ReferenceDataKeys.securityStatus] ?? [];
       emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
     } catch (e) {
       emit(state.copyWith(loaderStatus: LoadingStatus.error));
@@ -153,48 +101,17 @@ class CreateSecurityViewModel extends Cubit<CreateSecurityState> {
   }
 
   void securityGroupSelected(Reference selectedGroup) {
-    switch (selectedGroup.name) {
-      case 'Insurance':
-        selectedSecurityDescriptions = securityDescriptionInsuranceItems;
-        break;
-      case 'Property':
-        selectedSecurityDescriptions = securityDescriptionPropertyItems;
-        break;
-      case 'Guarantee':
-        selectedSecurityDescriptions = securityDescriptionGuaranteeItems;
-        break;
-      case 'Receivables':
-        selectedSecurityDescriptions = securityDescriptionReceivablesItems;
-        break;
-      case 'Deposit':
-        selectedSecurityDescriptions = securityDescriptionDepositeItems;
-        break;
-      case 'Shares':
-        selectedSecurityDescriptions = securityDescriptionSharesItems;
-        break;
-      case 'Commodities':
-        selectedSecurityDescriptions = securityDescriptionCommoditiesItems;
-        break;
-      case 'Movable Assets':
-        selectedSecurityDescriptions = securityDescriptionMovableAssetsItems;
-        break;
-      case 'Fixed Assets':
-        selectedSecurityDescriptions = securityDescriptionFixedAssetsItems;
-        break;
-      default:
-        selectedSecurityDescriptions = [];
-    }
     isSecurityGroupSelected = true;
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
-    // Now you can use `selectedDescriptions` to populate the second dropdown
-    // For example, setState(() => _secondDropdownItems = selectedDescriptions);
   }
 
   bool isSecurityDescriptionSelected = false;
   void securityDescriptionsSelected(Reference selected) {
     securityDescriptionsValue = selected;
     securityDescription = selected.name;
+    securityCode = selected.reference3;
     isSecurityDescriptionSelected = true;
+    securityNumber = "891274"; //TODO need to provide actual code
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
