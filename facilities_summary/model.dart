@@ -44,40 +44,39 @@ class FacilitiesSummaryViewModel extends Cubit<FacilitiesSummaryState> {
     }
   }
 
-  Future<void> saveFacilityDetails(
-      int indexOfCustomerFacilityListToSave) async {
+  Future<void> saveFacilityDetails(CustomerFacility customerFacility) async {
     emit(state.copyWith(loaderStatus: LoadingStatus.loading));
     try {
-      await FacilitySecurityRepository.instance.saveFacilityDetails(
-          (customerFacilities ?? [])[indexOfCustomerFacilityListToSave]);
+      await FacilitySecurityRepository.instance.saveFacilityDetails(customerFacility);
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
     }
     emit(state.copyWith(loaderStatus: LoadingStatus.loaded));
   }
 
-  Future<void> deleteFacilityDetails({int? serialNumber, int? typeID}) async {
+  Future<void> deleteFacilityDetails({
+    required Facility facility,
+    required FacilityGroup facilityGroup,
+  }) async {
     emit(state.copyWith(tableLoaderStatus: LoadingStatus.loading));
     try {
-      await FacilitySecurityRepository.instance
-          .deleteFacilityDetails(serialNumber: serialNumber, typeID: typeID);
+      await FacilitySecurityRepository.instance.deleteFacilityDetails(
+        serialNumber: facility.sNo,
+        typeID: facilityGroup.typeId,
+      );
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
     }
     emit(state.copyWith(tableLoaderStatus: LoadingStatus.loaded));
   }
 
-  Future<void> saveFacilitySubLimit(int index) async {
+  Future<void> saveFacilitySubLimit(CustomerFacility customerFacility, Facility facility) async {
     emit(state.copyWith(tableLoaderStatus: LoadingStatus.loading));
     try {
       await FacilitySecurityRepository.instance.saveFacilitySubLimit(
-        rimNo: customerFacilities?[index].rimNo,
-        limitDescriptionID:
-            customerFacilities?[index].generalWorkingCapitalLimits?.typeId,
-        limitCategory: customerFacilities?[index]
-            .generalWorkingCapitalLimits
-            ?.facilities?[index]
-            .facilityDetails,
+        rimNo: customerFacility.rimNo,
+        limitDescriptionID: customerFacility.generalWorkingCapitalLimits?.typeId,
+        limitCategory: facility.facilityDetails,
       );
     } catch (e) {
       AlertManager().showFailureToast(e.toString());
