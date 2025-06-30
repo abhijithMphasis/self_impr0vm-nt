@@ -13,7 +13,7 @@ import 'package:wcas_frontend/models/request/facility_security/facility_summary.
 
 class GeneralWorkingCapitalLimitTable extends StatelessWidget {
   final FacilitiesSummaryViewModel viewModel;
-  final GeneralWorkingCapitalLimits generalWorkingCapitalLimits;
+  final FacilityGroup generalWorkingCapitalLimits;
   final CustomerFacility customer;
 
   const GeneralWorkingCapitalLimitTable({
