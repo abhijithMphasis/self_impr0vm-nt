@@ -7,7 +7,6 @@ import 'package:wcas_frontend/core/components/button.dart';
 import 'package:wcas_frontend/core/components/section_header.dart';
 import 'package:wcas_frontend/core/components/top_section/top_section_details.dart';
 import 'package:wcas_frontend/core/globals.dart';
-import 'package:wcas_frontend/core/utils/utils.dart';
 import 'package:wcas_frontend/features/layout/view.dart';
 import 'package:flutter/material.dart';
 import 'package:wcas_frontend/features/request/facilities_securities/facilities_summary/widgets/general_working_capital_limit_table.dart';
@@ -67,77 +66,78 @@ class ViewDesktop extends StatelessWidget {
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemBuilder: (context, i) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: CustomAccordion(
-                  title:
-                      "${viewModel.customerFacilities?[i].custName} (${viewModel.customerFacilities?[i].rimNo})",
-                  children: (state.tableLoaderStatus == LoadingStatus.loading)
-                      ? [
-                          const BoxLayout(
-                              child: Center(
-                            child: CupertinoActivityIndicator(
-                              radius: 30,
-                            ),
-                          )),
-                        ]
-                      : [
-                          GeneralWorkingCapitalLimitTable(
-                            viewModel: viewModel,
-                            generalWorkingCapitalLimits: viewModel
-                                    .customerFacilities?[i]
-                                    .generalWorkingCapitalLimits ??
-                                GeneralWorkingCapitalLimits(),
-                            customerListIndex: i,
-                          ),
-                          LoansTable(
-                            viewModel: viewModel,
-                            loans: viewModel.customerFacilities?[i].loans ??
-                                Loans(),
-                            customerListIndex: i,
-                          ),
-                          PfeLimitsTable(
-                            viewModel: viewModel,
-                            customerListIndex: i,
-                            ppeLimits:
-                                viewModel.customerFacilities?[i].ppeLimits ??
-                                    PPELimits(),
-                          ),
-                          ProjectStandbyLimitsTable(
-                            viewModel: viewModel,
-                            projectStandbyLimits: viewModel
-                                    .customerFacilities?[i]
-                                    .projectStandbyLimits ??
-                                ProjectStandbyLimits(),
-                            customerListIndex: i,
-                          ),
-                          ProjectSpecificLimitTable(
-                            viewModel: viewModel,
-                            projectSpecificLimit: viewModel
-                                    .customerFacilities?[i]
-                                    .projectSpecificLimit ??
-                                ProjectSpecificLimit(),
-                            customerListIndex: i,
-                          ),
-                          OverallTotalTable(
-                              viewModel: viewModel,
-                              overallTotal: viewModel
-                                      .customerFacilities?[i].overallTotal ??
-                                  OverallTotal()),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: CustomButton(
-                                    label: "admin.save".tr(),
-                                    onPressed: () {
-                                      viewModel.saveFacilityDetails(i);
-                                    })),
-                          )
-                        ],
-                ),
-              ),
-              itemCount: viewModel.customerFacilities?.length,
+              itemBuilder: (context, i) {
+                final customer = viewModel.customerFacilities![i];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: CustomAccordion(
+                    title: "${customer.custName} (${customer.rimNo})",
+                    children:
+                        (state.tableLoaderStatus == LoadingStatus.loading)
+                            ? [
+                                const BoxLayout(
+                                  child: Center(
+                                    child: CupertinoActivityIndicator(
+                                      radius: 30,
+                                    ),
+                                  ),
+                                ),
+                              ]
+                            : [
+                                GeneralWorkingCapitalLimitTable(
+                                  viewModel: viewModel,
+                                  generalWorkingCapitalLimits:
+                                      customer.generalWorkingCapitalLimits ??
+                                          GeneralWorkingCapitalLimits(),
+                                  customer: customer,
+                                ),
+                                LoansTable(
+                                  viewModel: viewModel,
+                                  loans: customer.loans ?? Loans(),
+                                  customer: customer,
+                                ),
+                                PfeLimitsTable(
+                                  viewModel: viewModel,
+                                  customer: customer,
+                                  ppeLimits:
+                                      customer.ppeLimits ?? PPELimits(),
+                                ),
+                                ProjectStandbyLimitsTable(
+                                  viewModel: viewModel,
+                                  projectStandbyLimits:
+                                      customer.projectStandbyLimits ??
+                                          ProjectStandbyLimits(),
+                                  customer: customer,
+                                ),
+                                ProjectSpecificLimitTable(
+                                  viewModel: viewModel,
+                                  projectSpecificLimit:
+                                      customer.projectSpecificLimit ??
+                                          ProjectSpecificLimit(),
+                                  customer: customer,
+                                ),
+                                OverallTotalTable(
+                                  viewModel: viewModel,
+                                  overallTotal:
+                                      customer.overallTotal ?? OverallTotal(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: CustomButton(
+                                      label: "admin.save".tr(),
+                                      onPressed: () {
+                                        viewModel.saveFacilityDetails(customer);
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ],
+                  ),
+                );
+              },
+              itemCount: viewModel.customerFacilities?.length ?? 0,
             ),
           ],
         ),
