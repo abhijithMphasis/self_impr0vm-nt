@@ -7,6 +7,7 @@ import 'package:wcas_frontend/core/components/button.dart';
 import 'package:wcas_frontend/core/components/section_header.dart';
 import 'package:wcas_frontend/core/components/top_section/top_section_details.dart';
 import 'package:wcas_frontend/core/globals.dart';
+import 'package:wcas_frontend/core/utils/utils.dart';
 import 'package:wcas_frontend/features/layout/view.dart';
 import 'package:flutter/material.dart';
 import 'package:wcas_frontend/features/request/facilities_securities/facilities_summary/widgets/general_working_capital_limit_table.dart';
@@ -67,7 +68,8 @@ class ViewDesktop extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, i) {
-                final customer = viewModel.customerFacilities![i];
+                final customer = viewModel.customerFacilities?[i];
+                if (customer == null) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: CustomAccordion(
@@ -76,50 +78,48 @@ class ViewDesktop extends StatelessWidget {
                         (state.tableLoaderStatus == LoadingStatus.loading)
                             ? [
                                 const BoxLayout(
-                                  child: Center(
-                                    child: CupertinoActivityIndicator(
-                                      radius: 30,
-                                    ),
+                                    child: Center(
+                                  child: CupertinoActivityIndicator(
+                                    radius: 30,
                                   ),
-                                ),
+                                )),
                               ]
                             : [
                                 GeneralWorkingCapitalLimitTable(
                                   viewModel: viewModel,
-                                  generalWorkingCapitalLimits:
+                                  facilityGroup:
                                       customer.generalWorkingCapitalLimits ??
-                                          GeneralWorkingCapitalLimits(),
+                                          FacilityGroup(),
                                   customer: customer,
                                 ),
                                 LoansTable(
                                   viewModel: viewModel,
-                                  loans: customer.loans ?? Loans(),
+                                  facilityGroup: customer.loans ??
+                                      FacilityGroup(),
                                   customer: customer,
                                 ),
                                 PfeLimitsTable(
                                   viewModel: viewModel,
+                                  facilityGroup: customer.ppeLimits ??
+                                      FacilityGroup(),
                                   customer: customer,
-                                  ppeLimits:
-                                      customer.ppeLimits ?? PPELimits(),
                                 ),
                                 ProjectStandbyLimitsTable(
                                   viewModel: viewModel,
-                                  projectStandbyLimits:
-                                      customer.projectStandbyLimits ??
-                                          ProjectStandbyLimits(),
+                                  facilityGroup: customer.projectStandbyLimits ??
+                                      FacilityGroup(),
                                   customer: customer,
                                 ),
                                 ProjectSpecificLimitTable(
                                   viewModel: viewModel,
-                                  projectSpecificLimit:
-                                      customer.projectSpecificLimit ??
-                                          ProjectSpecificLimit(),
+                                  facilityGroup: customer.projectSpecificLimit ??
+                                      FacilityGroup(),
                                   customer: customer,
                                 ),
                                 OverallTotalTable(
                                   viewModel: viewModel,
-                                  overallTotal:
-                                      customer.overallTotal ?? OverallTotal(),
+                                  overallTotal: customer.overallTotal ??
+                                      OverallTotal(),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
@@ -132,7 +132,7 @@ class ViewDesktop extends StatelessWidget {
                                       },
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                   ),
                 );
